@@ -1,28 +1,25 @@
-from typing import Dict, List, Tuple
+import requests
+from typing import Dict, List, Optional, Tuple
 from websockets import broadcast
 from websockets.server import WebSocketServerProtocol
 
 from src.modules.susu.entity import SusuMasterData
 
-from src.helper.api import APIHelper
 
 
 class SusuDWHRepository:
-    __api: APIHelper
     __url: str
 
-    def __init__(self, api: APIHelper, url: str):
-        self.__api = api
-        self.__url = url
+    def __init__(self, hostname: str, route: str, port: Optional[int] = None, protocol: str = "http"):
+        self.__url = f"{protocol}://{hostname}:{port}/{route}" if (port) else f"{protocol}://{hostname}/{route}"
 
     def get_init_data(self) -> SusuMasterData:
         """
         Get Init Data
         """
-        init_data = self.__api.request(
-            self.__url,
-            Model = SusuMasterData
-        )
+        req = requests.get(self.__url)
+        req.raise_for_status()
+        init_data = SusuMasterData.model_validate(req.json())
         return init_data
 
 
