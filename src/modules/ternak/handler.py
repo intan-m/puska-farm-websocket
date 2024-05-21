@@ -18,9 +18,9 @@ class TernakHandler:
         await self.__usecase.add_bi_ws(ws)
     
 
-    async def etl_handler(self, ws: WebSocketServerProtocol, message: str):
+    async def etl_handler(self, ws: WebSocketServerProtocol):
         """
         Adding ETL Handler to WebSocket Producer
         """
-        self.__usecase.broadcast(json.dumps(message))
+        self.__usecase.broadcast()
         await ws.close()
