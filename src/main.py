@@ -33,14 +33,16 @@ async def handler(
             "bi-susu": susu_handler.bi_handler,
             "bi-ternak": ternak_handler.bi_handler,
         }
-        await BI_HANDLER[ev_type](ws)
+        if ev_type in BI_HANDLER:
+            await BI_HANDLER[ev_type](ws)
     
     elif (ev_type.split("-")[0] == "etl"):
         ETL_HANDLER = {
             "etl-susu": susu_handler.etl_handler,
             "etl-ternak": ternak_handler.etl_handler,
         }
-        await ETL_HANDLER[ev_type](ws, event["data"])
+        if ev_type in ETL_HANDLER:
+            await ETL_HANDLER[ev_type](ws)
 
 
 async def main():
@@ -54,7 +56,7 @@ async def main():
         ternak_handler = ternak_handler,
     )
 
-    async with websockets.serve(inj_handler, CONFIG.WS_HOSTNAME, CONFIG.WS_PORT):
+    async with websockets.serve(inj_handler, "*", 5000):
         await asyncio.Future() # Run Forever
 
 

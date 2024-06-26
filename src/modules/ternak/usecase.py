@@ -40,7 +40,9 @@ class TernakUsecase:
             await self.__repo_bi.send(ws_id, message)
     
     
-    def broadcast(self, message: str):
+    def broadcast(self):
         ws_list = self.__repo_bi.get_ws_pool()
+        new_data = self.__repo_dwh.get_init_data()
         if (ws_list):
-            self.__repo_etl.broadcast(ws_list, message)
+            self.__repo_etl.broadcast(ws_list, new_data.model_dump_json()
+        )

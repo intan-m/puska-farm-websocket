@@ -1,6 +1,7 @@
 from kink import di
+from typing import Optional
 
-from src.helper.api import APIHelper
+from src.helper.config import CONFIG
 
 from src.modules.susu.repository import SusuBIRepository, SusuDWHRepository, SusuETLRepository
 from src.modules.susu.usecase import SusuUsecase
@@ -20,11 +21,11 @@ class Repository:
     ternak_bi_repo: TernakBIRepository
     ternak_etl_repo: TernakETLRepository
 
-    def __init__(self, api_h: APIHelper, api_urls: dict):
-        self.susu_dwh_repo = SusuDWHRepository(api_h, api_urls["dwh-susu"])
+    def __init__(self, host: str, api_urls: dict, port: Optional[int] = None):
+        self.susu_dwh_repo = SusuDWHRepository(host, api_urls["dwh-susu"], port)
         self.susu_bi_repo = SusuBIRepository()
         self.susu_etl_repo = SusuETLRepository()
-        self.ternak_dwh_repo = TernakDWHRepository(api_h, api_urls["dwh-susu"])
+        self.ternak_dwh_repo = TernakDWHRepository(host, api_urls["dwh-ternak"], port)
         self.ternak_bi_repo = TernakBIRepository()
         self.ternak_etl_repo = TernakETLRepository()
 
@@ -41,13 +42,11 @@ class Usecase:
 
 def bootstrap_di():
     API_URLS = {
-        "dwh-susu": "",
-        "dwh-ternak": "",
+        "dwh-susu": "susu",
+        "dwh-ternak": "ternak",
     }
 
-    api_h = APIHelper()
-
-    repo = Repository(api_h, API_URLS)
+    repo = Repository(CONFIG.API_HOSTNAME, API_URLS, CONFIG.API_PORT)
     usecase = Usecase(repo)
 
     di[SusuHandler] = SusuHandler(usecase.susu_usecase)
