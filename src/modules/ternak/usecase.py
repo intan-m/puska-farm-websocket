@@ -33,8 +33,8 @@ class TernakUsecase:
             "id": ws_id,
         }))
 
-        # init_data = self.__repo_dwh.get_init_data()
-        # await self.__repo_bi.send(ws_id, init_data.model_dump_json())
+        init_data = self.__repo_dwh.get_init_data()
+        await self.__repo_bi.send(ws_id, init_data.model_dump_json())
 
         async for message in ws:
             await self.__repo_bi.send(ws_id, message)

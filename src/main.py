@@ -56,7 +56,7 @@ async def main():
         ternak_handler = ternak_handler,
     )
 
-    async with websockets.serve(inj_handler, CONFIG.WS_HOSTNAME, CONFIG.WS_PORT):
+    async with websockets.serve(inj_handler, "*", 5000):
         await asyncio.Future() # Run Forever
 
 

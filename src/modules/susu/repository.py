@@ -13,13 +13,15 @@ class SusuDWHRepository:
     def __init__(self, hostname: str, route: str, port: Optional[int] = None, protocol: str = "http"):
         self.__url = f"{protocol}://{hostname}:{port}/{route}" if (port) else f"{protocol}://{hostname}/{route}"
 
-    def get_init_data(self) -> SusuMasterData:
+    def get_init_data(self) -> Optional[SusuMasterData]:
         """
         Get Init Data
         """
         req = requests.get(self.__url)
         req.raise_for_status()
-        init_data = SusuMasterData.model_validate(req.json())
+
+        data = req.json()
+        init_data = SusuMasterData.model_validate(req.json()) if data else None
         return init_data
 
 
