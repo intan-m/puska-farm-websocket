@@ -33,8 +33,9 @@ class SusuUsecase:
             "id": ws_id,
         }))
 
-        # init_data = self.__repo_dwh.get_init_data()
-        # await self.__repo_bi.send(ws_id, init_data.model_dump_json())
+        init_data = self.__repo_dwh.get_init_data()
+        if init_data:
+            await self.__repo_bi.send(ws_id, init_data.model_dump_json())
 
         async for message in ws:
             await self.__repo_bi.send(ws_id, message)
@@ -43,5 +44,5 @@ class SusuUsecase:
     def broadcast(self):
         ws_list = self.__repo_bi.get_ws_pool()
         new_data = self.__repo_dwh.get_init_data()
-        if (ws_list):
+        if ws_list and new_data:
             self.__repo_etl.broadcast(ws_list, new_data.model_dump_json())
