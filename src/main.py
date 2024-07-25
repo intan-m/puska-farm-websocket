@@ -1,12 +1,13 @@
+import os
 import json
 import logging
 
+import ssl
 import asyncio
 import websockets
 from kink import di
 from functools import partial
 from websockets import WebSocketServerProtocol
-
 
 from src.modules.susu.handler import SusuHandler
 from src.modules.ternak.handler import TernakHandler
@@ -45,7 +46,7 @@ async def handler(
             await ETL_HANDLER[ev_type](ws)
 
 
-async def main():
+async def main(ssl_context: ssl.SSLContext):
     # Init Handler
     susu_handler = di[SusuHandler]
     ternak_handler = di[TernakHandler]
@@ -56,7 +57,7 @@ async def main():
         ternak_handler = ternak_handler,
     )
 
-    async with websockets.serve(inj_handler, "*", 5000):
+    async with websockets.serve(inj_handler, "*", 5000, ssl=ssl_context):
         await asyncio.Future() # Run Forever
 
 
@@ -66,4 +67,11 @@ if __name__ == "__main__":
         format = "[%(asctime)s] %(levelname)s - %(message)s",
         datefmt = "%Y-%m-%d %H:%M:%S",
     )
-    asyncio.run(main())
+
+    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    ssl_context.load_cert_chain(
+        certfile = os.path.join(CONFIG.CERT_DIR, "fullchain.pem"),
+        keyfile = os.path.join(CONFIG.CERT_DIR, "privkey.pem"),
+    )
+
+    asyncio.run(main(ssl_context))
