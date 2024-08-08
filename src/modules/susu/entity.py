@@ -4,24 +4,24 @@ from pydantic import BaseModel
 # Entity
 # Sub Model
 class SusuSegar(BaseModel):
-    distribusi: int
-    produksi: int
+    distribusi: Optional[int]
+    produksi: Optional[int]
 
 class SusuPasteurisasi(BaseModel):
-    distribusi: int
-    produksi: int
+    distribusi: Optional[int]
+    produksi: Optional[int]
 
 class SusuKefir(BaseModel):
-    distribusi: int
-    produksi: int
+    distribusi: Optional[int]
+    produksi: Optional[int]
 
 class Yogurt(BaseModel):
-    distribusi: int
-    produksi: int
+    distribusi: Optional[int]
+    produksi: Optional[int]
 
 class Keju(BaseModel):
-    distribusi: int
-    produksi: int
+    distribusi: Optional[int]
+    produksi: Optional[int]
 
 class PrediksiValue(BaseModel):
     label: str
@@ -50,11 +50,13 @@ class PermintaanSusuSegarPerMitra(BaseModel):
     value: int
 
 class HargaSusu(BaseModel):
-    minimum: int
-    maximum: int
-    rata_rata: float
+    minimum: Optional[int]
+    maximum: Optional[int]
+    rata_rata: Optional[float]
 
-class SusuKabupatenData(BaseModel):
+
+# Main Model
+class SusuMasterData(BaseModel):
     susu_segar: SusuSegar
     susu_pasteurisasi: SusuPasteurisasi
     susu_kefir: SusuKefir
@@ -68,9 +70,3 @@ class SusuKabupatenData(BaseModel):
     total_persentase_distribusi: float
     total_pendapatan: int
     harga_susu: HargaSusu
-
-
-# Main Model
-class SusuMasterData(BaseModel):
-    year: Union[int, None]
-    data: SusuKabupatenData

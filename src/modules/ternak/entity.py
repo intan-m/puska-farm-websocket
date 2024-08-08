@@ -5,19 +5,19 @@ from pydantic import BaseModel
 # Entity
 # Sub Model
 class TernakPotong(BaseModel):
-    total_produksi: int
-    total_distribusi: int
-    persentase: float
+    total_produksi: Optional[int]
+    total_distribusi: Optional[int]
+    persentase: Optional[float]
 
 class DagingTernak(BaseModel):
-    total_produksi: int
-    total_distribusi: int
-    persentase: float
+    total_produksi: Optional[int]
+    total_distribusi: Optional[int]
+    persentase: Optional[float]
 
 class SusuSegar(BaseModel):
-    total_produksi: int
-    total_distribusi: int
-    persentase: float
+    total_produksi: Optional[int]
+    total_distribusi: Optional[int]
+    persentase: Optional[float]
 
 class ProduksiDistribusiTernakPotong(BaseModel):
     label: str
@@ -39,31 +39,11 @@ class SebaranPopulasi(BaseModel):
     title: str
     populasi: int
 
-class SebaranPopulasiYearly(BaseModel):
-    year: int
-    sebaran_populasi: List[SebaranPopulasi]
-
-class JumlahPerahDewasa(BaseModel):
-    produksi: float
-    distribusi: float
-
-class JumlahPerahAnakan(BaseModel):
-    produksi: float
-    distribusi: float
-
-class JumlahPedagingDewasa(BaseModel):
-    produksi: float
-    distribusi: float
-
-class JumlahPedagingAnakan(BaseModel):
-    produksi: float
-    distribusi: float
-
 class RingkasanPopulasi(BaseModel):
-    jumlah_perah_dewasa: JumlahPerahDewasa
-    jumlah_perah_anakan: JumlahPerahAnakan
-    jumlah_pedaging_dewasa: JumlahPedagingDewasa
-    jumlah_pedaging_anakan: JumlahPedagingAnakan
+    jumlah_perah_dewasa: int
+    jumlah_perah_anakan: int
+    jumlah_pedaging_dewasa: int
+    jumlah_pedaging_anakan: int
 
 class TablePopulasi(BaseModel):
     wilayah: str
@@ -85,6 +65,6 @@ class TernakMasterData(BaseModel):
     pro_dis_ternak_potong: List[ProduksiDistribusiTernakPotong]
     pro_dis_daging_ternak: List[ProduksiDistribusiDagingTernak]
     pro_dis_susu_segar: List[ProduksiDistribusiSusuSegar]
-    sebaran_populasi_all: List[SebaranPopulasiYearly]
+    sebaran_populasi_all: List[SebaranPopulasi]
     ringkasan_populasi: RingkasanPopulasi
     table: List[TablePopulasi]

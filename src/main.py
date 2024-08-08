@@ -1,6 +1,7 @@
 import os
 import json
 import logging
+from typing import Optional
 
 import ssl
 import asyncio
@@ -24,7 +25,7 @@ async def handler(
     Handle a connection and dispatch it according to who is connecting.
     """
     message = await ws.recv()
-    event = json.loads(message)
+    event: dict = json.loads(message)
     assert "type" in event
     assert isinstance(event["type"], str)
 
@@ -46,7 +47,7 @@ async def handler(
             await ETL_HANDLER[ev_type](ws)
 
 
-async def main(ssl_context: ssl.SSLContext):
+async def main(ssl_context: Optional[ssl.SSLContext]):
     # Init Handler
     susu_handler = di[SusuHandler]
     ternak_handler = di[TernakHandler]
@@ -57,8 +58,12 @@ async def main(ssl_context: ssl.SSLContext):
         ternak_handler = ternak_handler,
     )
 
-    async with websockets.serve(inj_handler, "*", 5000, ssl=ssl_context):
-        await asyncio.Future() # Run Forever
+    if ssl_context:
+        async with websockets.serve(inj_handler, "*", 5000, ssl=ssl_context):
+            await asyncio.Future() # Run Forever
+    else:
+        async with websockets.serve(inj_handler, "*", 5000):
+            await asyncio.Future() # Run Forever
 
 
 if __name__ == "__main__":
@@ -68,10 +73,13 @@ if __name__ == "__main__":
         datefmt = "%Y-%m-%d %H:%M:%S",
     )
 
-    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    ssl_context.load_cert_chain(
-        certfile = os.path.join(CONFIG.CERT_DIR, "fullchain.pem"),
-        keyfile = os.path.join(CONFIG.CERT_DIR, "privkey.pem"),
-    )
+    if CONFIG.CERT_DIR:
+        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        ssl_context.load_cert_chain(
+            certfile = os.path.join(CONFIG.CERT_DIR, "fullchain.pem"),
+            keyfile = os.path.join(CONFIG.CERT_DIR, "privkey.pem"),
+        )
+    else:
+        ssl_context = None
 
     asyncio.run(main(ssl_context))

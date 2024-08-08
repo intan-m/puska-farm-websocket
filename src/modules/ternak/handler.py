@@ -1,4 +1,4 @@
-import json
+from typing import Optional
 from websockets.server import WebSocketServerProtocol
 
 from src.modules.ternak.usecase import TernakUsecase

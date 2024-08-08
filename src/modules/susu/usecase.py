@@ -1,6 +1,7 @@
 import json
 import logging
 import secrets
+from typing import Optional
 from websockets.server import WebSocketServerProtocol
 
 from src.modules.susu.repository import (
@@ -22,27 +23,44 @@ class SusuUsecase:
     
 
     async def add_bi_ws(self, ws: WebSocketServerProtocol):
+        # Add New WebSocket
         ws_id = secrets.token_urlsafe(12)
-        logging.info(f"Adding New WebSocket for bi-susu: {ws_id}")
+        logging.info(f"Adding New WebSocket for bi-susu: {ws_id}.")
 
         self.__repo_bi.add_ws(ws, ws_id)
         await self.__repo_bi.send(ws_id, json.dumps({
             "status": "OK",
+            "ws_id": ws_id,
             "type": "web",
             "category": "susu",
-            "id": ws_id,
         }))
 
-        init_data = self.__repo_dwh.get_init_data()
-        if init_data:
-            await self.__repo_bi.send(ws_id, init_data.model_dump_json())
+        # Get Data for WebSocket
+        data = self.__repo_dwh.get_data()
+        if data:
+            await self.__repo_bi.send(ws_id, data.model_dump_json())
 
+        # Updating WebSocket Filters
         async for message in ws:
-            await self.__repo_bi.send(ws_id, message)
+            try:
+                update: dict = json.loads(message)
+                filters = update.pop("filters")
+                
+                logging.info(f"Updating WebSocket '{ws_id}' filters: {filters}")
+                self.__repo_bi.add_ws(ws, ws_id, filters)
+                data = self.__repo_dwh.get_data()
+                if data:
+                    await self.__repo_bi.send(ws_id, data.model_dump_json())
+
+            except json.JSONDecodeError:
+                logging.error(f"Error while Parsing JSON from '{ws_id}': {str(message)}")
+            except KeyError as e:
+                logging.error(f"{str(e)} not found in JSON from '{ws_id}'")
     
     
     def broadcast(self):
         ws_list = self.__repo_bi.get_ws_pool()
-        new_data = self.__repo_dwh.get_init_data()
-        if ws_list and new_data:
-            self.__repo_etl.broadcast(ws_list, new_data.model_dump_json())
+        for ws, filters in ws_list:
+            new_data = self.__repo_dwh.get_data(filters)
+            if new_data:
+                self.__repo_etl.send(ws, new_data.model_dump_json())

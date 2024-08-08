@@ -6,40 +6,41 @@ from websockets.server import WebSocketServerProtocol
 from src.modules.susu.entity import SusuMasterData
 
 
-
 class SusuDWHRepository:
     __url: str
 
     def __init__(self, hostname: str, route: str, port: Optional[int] = None, protocol: str = "http"):
         self.__url = f"{protocol}://{hostname}:{port}/{route}" if (port) else f"{protocol}://{hostname}/{route}"
 
-    def get_init_data(self) -> Optional[SusuMasterData]:
+
+    def get_data(self, params: Optional[dict] = None) -> Optional[SusuMasterData]:
         """
         Get Init Data
         """
-        req = requests.get(self.__url)
+        req = requests.get(self.__url, params=params)
         req.raise_for_status()
 
-        data = req.json()
-        init_data = SusuMasterData.model_validate(req.json()) if data else None
-        return init_data
+        __data = req.json()
+        data = SusuMasterData.model_validate(__data) if (__data) else None
+        return data
 
 
 class SusuBIRepository:
-    __ws_list: Dict[str, WebSocketServerProtocol]
+    __ws_list: Dict[str, Tuple[WebSocketServerProtocol, Optional[dict]]]
 
     def __init__(self):
         self.__ws_list = {}
     
 
-    def add_ws(self, ws: WebSocketServerProtocol, ws_id: str) -> None:
+    def add_ws(self, ws: WebSocketServerProtocol, ws_id: str, filters: Optional[dict] = None) -> None:
         """
         Adding new WebSocket Client to Pool
         """
-        self.__ws_list[ws_id] = ws
+        filters = filters if (filters) else {}
+        self.__ws_list[ws_id] = (ws, filters)
     
 
-    def get_ws_pool(self) -> List[WebSocketServerProtocol]:
+    def get_ws_pool(self) -> List[Tuple[WebSocketServerProtocol, Optional[dict]]]:
         """
         Get List of WebSockets from Pool
         """
@@ -50,7 +51,7 @@ class SusuBIRepository:
         """
         Send message to Specific WebSocket (by ID)
         """
-        ws = self.__ws_list[ws_id]
+        ws, _ = self.__ws_list[ws_id]
         await ws.send(message)
 
 
@@ -64,10 +65,10 @@ class SusuETLRepository:
         Broadcast message to List (pool) of WebSocket using Assigned WebSocket.
         """
         broadcast(set(ws_list), message)
-    
 
-    def validate(self, data: dict) -> Tuple[SusuMasterData, bool]:
+
+    def send(self, websocket: WebSocketServerProtocol, message: str):
         """
-        Validate data and return modelled data.
+        Send message to individual WebSocket
         """
-        pass
+        websocket.send(message)
