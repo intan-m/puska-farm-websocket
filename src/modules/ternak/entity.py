@@ -15,8 +15,8 @@ class DagingTernak(BaseModel):
     persentase: Optional[float]
 
 class SusuSegar(BaseModel):
-    total_produksi: Optional[int]
-    total_distribusi: Optional[int]
+    total_produksi: Optional[float]
+    total_distribusi: Optional[float]
     persentase: Optional[float]
 
 class ProduksiDistribusiTernakPotong(BaseModel):
