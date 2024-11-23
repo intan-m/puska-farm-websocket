@@ -6,20 +6,30 @@ from pydantic import BaseModel
 class SusuSegar(BaseModel):
     distribusi: Optional[float]
     produksi: Optional[float]
+    distribusi: Optional[float]
+    produksi: Optional[float]
 
 class SusuPasteurisasi(BaseModel):
+    distribusi: Optional[float]
+    produksi: Optional[float]
     distribusi: Optional[float]
     produksi: Optional[float]
 
 class SusuKefir(BaseModel):
     distribusi: Optional[float]
     produksi: Optional[float]
+    distribusi: Optional[float]
+    produksi: Optional[float]
 
 class Yogurt(BaseModel):
     distribusi: Optional[float]
     produksi: Optional[float]
+    distribusi: Optional[float]
+    produksi: Optional[float]
 
 class Keju(BaseModel):
+    distribusi: Optional[float]
+    produksi: Optional[float]
     distribusi: Optional[float]
     produksi: Optional[float]
 
@@ -47,7 +57,7 @@ class ProduksiDistribusiSusuSegar(BaseModel):
 
 class PermintaanSusuSegarPerMitra(BaseModel):
     label: str
-    value: float
+    value: Optional[float]
 
 class HargaSusu(BaseModel):
     minimum: Optional[int]

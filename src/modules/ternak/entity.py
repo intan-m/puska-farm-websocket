@@ -7,9 +7,13 @@ from pydantic import BaseModel
 class TernakPotong(BaseModel):
     total_produksi: Optional[float]
     total_distribusi: Optional[float]
+    total_produksi: Optional[float]
+    total_distribusi: Optional[float]
     persentase: Optional[float]
 
 class DagingTernak(BaseModel):
+    total_produksi: Optional[float]
+    total_distribusi: Optional[float]
     total_produksi: Optional[float]
     total_distribusi: Optional[float]
     persentase: Optional[float]
@@ -17,22 +21,24 @@ class DagingTernak(BaseModel):
 class SusuSegar(BaseModel):
     total_produksi: Optional[float]
     total_distribusi: Optional[float]
+    total_produksi: Optional[float]
+    total_distribusi: Optional[float]
     persentase: Optional[float]
 
 class ProduksiDistribusiTernakPotong(BaseModel):
     label: str
-    produksi: float
-    distribusi: float
+    produksi: Optional[float]
+    distribusi: Optional[float]
 
 class ProduksiDistribusiDagingTernak(BaseModel):
     label: str
-    produksi: float
-    distribusi: float
+    produksi: Optional[float]
+    distribusi: Optional[float]
 
 class ProduksiDistribusiSusuSegar(BaseModel):
     label: str
-    produksi: float
-    distribusi: float
+    produksi: Optional[float]
+    distribusi: Optional[float]
 
 class SebaranPopulasi(BaseModel):
     region: Optional[str]
