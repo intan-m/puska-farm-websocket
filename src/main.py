@@ -30,13 +30,14 @@ async def handler(
     assert isinstance(event["type"], str)
 
     ev_type: str = event["type"]
+    filters: Optional[dict] = event.get("filters", {})
     if (ev_type.split("-")[0] == "bi"):
         BI_HANDLER = {
             "bi-susu": susu_handler.bi_handler,
             "bi-ternak": ternak_handler.bi_handler,
         }
         if ev_type in BI_HANDLER:
-            await BI_HANDLER[ev_type](ws)
+            await BI_HANDLER[ev_type](ws, filters)
     
     elif (ev_type.split("-")[0] == "etl"):
         ETL_HANDLER = {

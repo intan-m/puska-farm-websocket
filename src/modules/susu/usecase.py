@@ -22,7 +22,7 @@ class SusuUsecase:
         self.__repo_etl = repo_etl
     
 
-    async def add_bi_ws(self, ws: WebSocketServerProtocol):
+    async def add_bi_ws(self, ws: WebSocketServerProtocol, filters: Optional[dict]):
         # Add New WebSocket
         ws_id = secrets.token_urlsafe(12)
         logging.info(f"Adding New WebSocket for bi-susu: {ws_id}.")
@@ -36,7 +36,7 @@ class SusuUsecase:
         }))
 
         # Get Data for WebSocket
-        data = self.__repo_dwh.get_data()
+        data = self.__repo_dwh.get_data(params=filters)
         if data:
             await self.__repo_bi.send(ws_id, data.model_dump_json())
 
@@ -44,11 +44,11 @@ class SusuUsecase:
         async for message in ws:
             try:
                 update: dict = json.loads(message)
-                filters = update.pop("filters")
-                
+                filters = update.pop("filters", {})
+        
                 logging.info(f"Updating WebSocket '{ws_id}' filters: {filters}")
                 self.__repo_bi.add_ws(ws, ws_id, filters)
-                data = self.__repo_dwh.get_data()
+                data = self.__repo_dwh.get_data(params=filters)
                 if data:
                     await self.__repo_bi.send(ws_id, data.model_dump_json())
 

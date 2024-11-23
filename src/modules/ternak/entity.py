@@ -5,13 +5,13 @@ from pydantic import BaseModel
 # Entity
 # Sub Model
 class TernakPotong(BaseModel):
-    total_produksi: Optional[int]
-    total_distribusi: Optional[int]
+    total_produksi: Optional[float]
+    total_distribusi: Optional[float]
     persentase: Optional[float]
 
 class DagingTernak(BaseModel):
-    total_produksi: Optional[int]
-    total_distribusi: Optional[int]
+    total_produksi: Optional[float]
+    total_distribusi: Optional[float]
     persentase: Optional[float]
 
 class SusuSegar(BaseModel):
@@ -21,18 +21,18 @@ class SusuSegar(BaseModel):
 
 class ProduksiDistribusiTernakPotong(BaseModel):
     label: str
-    produksi: int
-    distribusi: int
+    produksi: float
+    distribusi: float
 
 class ProduksiDistribusiDagingTernak(BaseModel):
     label: str
-    produksi: int
-    distribusi: int
+    produksi: float
+    distribusi: float
 
 class ProduksiDistribusiSusuSegar(BaseModel):
     label: str
-    produksi: int
-    distribusi: int
+    produksi: float
+    distribusi: float
 
 class SebaranPopulasi(BaseModel):
     region: Optional[str]
@@ -46,7 +46,7 @@ class RingkasanPopulasi(BaseModel):
     jumlah_pedaging_anakan: int
 
 class TablePopulasi(BaseModel):
-    wilayah: str
+    wilayah: Optional[str] = None
     perah_dewasa_jantan: int
     perah_dewasa_betina: int
     perah_anakan_jantan: int
@@ -55,6 +55,7 @@ class TablePopulasi(BaseModel):
     pedaging_dewasa_betina: int
     pedaging_anakan_jantan: int
     pedaging_anakan_betina: int
+    total_populasi: int
 
 
 # Main Model

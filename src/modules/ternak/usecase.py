@@ -1,3 +1,4 @@
+import re
 import json
 import logging
 import secrets
@@ -22,7 +23,7 @@ class TernakUsecase:
         self.__repo_etl = repo_etl
     
 
-    async def add_bi_ws(self, ws: WebSocketServerProtocol):
+    async def add_bi_ws(self, ws: WebSocketServerProtocol, filters: Optional[dict]):
         # Add New WebSocket
         ws_id = secrets.token_urlsafe(12)
         logging.info(f"Adding New WebSocket for bi-ternak: {ws_id}")
@@ -35,14 +36,16 @@ class TernakUsecase:
             "category": "ternak",
         }))
 
-        data = self.__repo_dwh.get_data()
+        data = self.__repo_dwh.get_data(params=filters)
         if data:
             await self.__repo_bi.send(ws_id, data.model_dump_json())
 
         # Updating WebSocket Filters
         async for message in ws:
             try:
-                update: dict = json.loads(message)
+                cln_message = re.sub(r"(\w+)\s*:", r'"\1"', message.replace("'", '"'))
+                logging.info(cln_message)
+                update: dict = json.loads(cln_message)
                 filters = update.pop("filters")
                 
                 logging.info(f"Updating WebSocket '{ws_id}' filters: {filters}")

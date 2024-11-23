@@ -11,11 +11,11 @@ class SusuHandler:
         self.__usecase = usecase
 
     
-    async def bi_handler(self, ws: WebSocketServerProtocol):
+    async def bi_handler(self, ws: WebSocketServerProtocol, filters: Optional[dict]):
         """
         Adding BI Handler to WebSocket Pool
         """
-        await self.__usecase.add_bi_ws(ws)
+        await self.__usecase.add_bi_ws(ws, filters)
     
 
     async def etl_handler(self, ws: WebSocketServerProtocol):
