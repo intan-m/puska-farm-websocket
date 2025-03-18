@@ -12,6 +12,7 @@ from websockets import WebSocketServerProtocol
 
 from src.modules.susu.handler import SusuHandler
 from src.modules.ternak.handler import TernakHandler
+from src.modules.ref.handler import RefHandler
 
 from src.helper.config import CONFIG
 
@@ -20,6 +21,7 @@ async def handler(
     ws: WebSocketServerProtocol,
     susu_handler: SusuHandler,
     ternak_handler: TernakHandler,
+    ref_handler: RefHandler,
 ):
     """
     Handle a connection and dispatch it according to who is connecting.
@@ -35,6 +37,7 @@ async def handler(
         BI_HANDLER = {
             "bi-susu": susu_handler.bi_handler,
             "bi-ternak": ternak_handler.bi_handler,
+            "bi-lokasi": ref_handler.lokasi_handler
         }
         if ev_type in BI_HANDLER:
             await BI_HANDLER[ev_type](ws, filters)
@@ -52,11 +55,13 @@ async def main(ssl_context: Optional[ssl.SSLContext]):
     # Init Handler
     susu_handler = di[SusuHandler]
     ternak_handler = di[TernakHandler]
+    ref_handler = di[RefHandler]
 
     inj_handler = partial(
         handler,
         susu_handler = susu_handler,
         ternak_handler = ternak_handler,
+        ref_handler = ref_handler
     )
 
     if ssl_context:
